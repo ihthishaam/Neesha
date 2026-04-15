@@ -9,7 +9,6 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Inter:wght@300;400;500&family=Dancing+Script:wght@600;700&display=swap" rel="stylesheet" />
   <style>
-    /* ── RESET & BASE ─────────────────────────── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
@@ -43,7 +42,6 @@
       position: relative;
     }
 
-    /* ── ANIMATED BACKGROUND ORBS ─────────────── */
     .bg-orbs {
       position: fixed;
       inset: 0;
@@ -82,7 +80,6 @@
       100% { transform: translate(40px, 60px) scale(1.08); }
     }
 
-    /* ── FLOATING PETALS ──────────────────────── */
     .petals { position: fixed; inset: 0; pointer-events: none; z-index: 1; }
     .petal {
       position: absolute;
@@ -98,7 +95,6 @@
       100% { transform: translateY(110vh) rotate(720deg) translateX(80px); opacity: 0; }
     }
 
-    /* ── CONTAINER ────────────────────────────── */
     .container {
       position: relative;
       z-index: 2;
@@ -109,7 +105,6 @@
       padding: 2rem 1rem;
     }
 
-    /* ── GLASS CARD ───────────────────────────── */
     .glass-card {
       background: var(--glass-bg);
       backdrop-filter: blur(24px);
@@ -140,7 +135,6 @@
       background: linear-gradient(90deg, transparent, var(--gold), var(--rose), var(--gold), transparent);
     }
 
-    /* ── INVITATION HEADER ────────────────────── */
     .invite-label {
       font-family: 'Cormorant Garamond', serif;
       font-style: italic;
@@ -150,7 +144,6 @@
       margin-bottom: 1rem;
     }
 
-    /* ── DIVIDER ──────────────────────────────── */
     .divider-ornament {
       display: flex;
       align-items: center;
@@ -168,13 +161,14 @@
       line-height: 1;
     }
 
-    /* ── NAMES ────────────────────────────────── */
     .names-section {
       margin: 1.5rem 0;
     }
+
+    /* ── ROMANTIC FONT FOR NAMES ── */
     .groom-name, .bride-name {
-      font-family: 'Playfair Display', serif;
-      font-size: clamp(1.6rem, 5vw, 2.2rem);
+      font-family: 'Dancing Script', cursive;
+      font-size: clamp(2rem, 6vw, 2.8rem);
       font-weight: 700;
       line-height: 1.2;
       background: linear-gradient(135deg, var(--gold-light), var(--gold), var(--rose-light));
@@ -182,6 +176,7 @@
       -webkit-text-fill-color: transparent;
       background-clip: text;
     }
+
     .ampersand-wrap {
       margin: 0.75rem 0;
     }
@@ -201,7 +196,6 @@
       50%       { transform: scale(1.05); }
     }
 
-    /* ── EVENT DETAILS ────────────────────────── */
     .event-details {
       display: flex;
       flex-direction: column;
@@ -234,7 +228,6 @@
       color: var(--gold-light);
     }
 
-    /* ── INVITE MESSAGE ───────────────────────── */
     .invite-message {
       font-family: 'Cormorant Garamond', serif;
       font-size: 1.05rem;
@@ -244,7 +237,6 @@
       margin: 1rem 0 1.5rem;
     }
 
-    /* ── BUTTONS ──────────────────────────────── */
     .btn-primary {
       display: inline-flex;
       align-items: center;
@@ -282,7 +274,6 @@
     .btn-primary svg { transition: transform var(--transition); }
     .btn-primary:hover svg { transform: translateX(3px); }
 
-    /* ── COUNTDOWN ────────────────────────────── */
     .countdown-wrap {
       margin-top: 2rem;
     }
@@ -330,10 +321,8 @@
       margin-bottom: 14px;
     }
 
-    /* ── HIDDEN ───────────────────────────────── */
     .hidden { display: none !important; }
 
-    /* ── RSVP FORM ────────────────────────────── */
     .rsvp-card { text-align: left; }
 
     .back-btn {
@@ -415,7 +404,6 @@
       min-height: 1rem;
     }
 
-    /* Attendance options */
     .attend-options {
       display: flex;
       flex-direction: column;
@@ -444,32 +432,6 @@
     }
     .option-icon { font-size: 1.2rem; }
 
-    /* Meal options */
-    .meal-options {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0.5rem;
-    }
-    .meal-opt {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(201,168,76,0.15);
-      border-radius: 10px;
-      padding: 0.6rem 0.8rem;
-      cursor: pointer;
-      font-size: 0.82rem;
-      transition: border-color var(--transition), background var(--transition);
-    }
-    .meal-opt:hover { border-color: var(--gold-dark); }
-    .meal-opt input[type="radio"] { accent-color: var(--gold); }
-    .meal-opt.selected {
-      border-color: var(--gold);
-      background: rgba(201,168,76,0.1);
-    }
-
-    /* Plus one toggle */
     .toggle-field { transition: opacity 0.3s; }
     .toggle-label {
       display: flex;
@@ -512,10 +474,8 @@
     .switch input:checked + .slider { background: var(--gold-dark); border-color: var(--gold); }
     .switch input:checked + .slider::before { transform: translateX(20px); background: #fff; }
 
-    /* Submit */
     .btn-submit { width: 100%; margin-top: 0.5rem; justify-content: center; }
 
-    /* Spinner */
     .spinner {
       width: 18px; height: 18px;
       border: 2px solid rgba(255,255,255,0.3);
@@ -525,7 +485,6 @@
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* ── SUCCESS SCREEN ───────────────────────── */
     .success-card { text-align: center; }
     .success-icon {
       font-size: 3.5rem;
@@ -565,7 +524,6 @@
       color: var(--text-muted);
     }
 
-    /* ── DRESS CODE ───────────────────────────── */
     .dresscode-heading {
       font-family: 'Playfair Display', serif;
       font-size: 1.3rem;
@@ -616,10 +574,8 @@
       letter-spacing: 0.06em;
     }
 
-    /* ── RESPONSIVE ───────────────────────────── */
     @media (max-width: 480px) {
       .glass-card { padding: 2rem 1.25rem; }
-      .meal-options { grid-template-columns: 1fr; }
       .count-box { min-width: 50px; padding: 0.5rem 0.6rem; }
       .count-box span:first-child { font-size: 1.2rem; }
     }
@@ -627,19 +583,17 @@
 </head>
 <body>
 
-  <!-- Animated background orbs -->
   <div class="bg-orbs">
     <div class="orb orb-1"></div>
     <div class="orb orb-2"></div>
     <div class="orb orb-3"></div>
   </div>
 
-  <!-- Floating petals -->
   <div class="petals" id="petals"></div>
 
   <main class="container">
 
-    <!-- ── INVITATION CARD ─────────────────────── -->
+    <!-- INVITATION CARD -->
     <section class="invitation-card glass-card" id="invitationSection">
       <div class="card-ribbon"></div>
       <div class="invitation-header">
@@ -689,7 +643,6 @@
           <path d="M5 12h14M12 5l7 7-7 7"/>
         </svg>
       </button>
-      <!-- Countdown -->
       <div class="countdown-wrap">
         <p class="countdown-label">Counting down to the big day</p>
         <div class="countdown" id="countdown">
@@ -704,7 +657,7 @@
       </div>
     </section>
 
-    <!-- ── RSVP FORM ───────────────────────────── -->
+    <!-- RSVP FORM -->
     <section class="rsvp-card glass-card hidden" id="rsvpSection">
       <button class="back-btn" onclick="showInvitation()">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -723,12 +676,6 @@
           <label for="name">Full Name <span class="required">*</span></label>
           <input type="text" id="name" name="name" placeholder="Your full name" required autocomplete="name"/>
           <span class="field-error" id="name-error"></span>
-        </div>
-
-        <!-- Email -->
-        <div class="field-group">
-          <label for="email">Email Address</label>
-          <input type="email" id="email" name="email" placeholder="your@email.com" autocomplete="email"/>
         </div>
 
         <!-- Phone -->
@@ -760,7 +707,7 @@
           <span class="field-error" id="attending-error"></span>
         </div>
 
-        <!-- Plus One -->
+        <!-- Plus One (shown for yes/maybe) -->
         <div class="field-group toggle-field hidden" id="plusOneGroup">
           <div class="toggle-label">
             <label for="plus_one">
@@ -770,29 +717,6 @@
             <label class="switch">
               <input type="checkbox" id="plus_one" name="plus_one" value="true"/>
               <span class="slider"></span>
-            </label>
-          </div>
-        </div>
-
-        <!-- Meal Preference -->
-        <div class="field-group toggle-field hidden" id="mealGroup">
-          <p class="group-label">Meal Preference</p>
-          <div class="meal-options">
-            <label class="meal-opt selected" for="meal_nopref">
-              <input type="radio" id="meal_nopref" name="meal_pref" value="no-preference" checked/>
-              <span>No Preference</span>
-            </label>
-            <label class="meal-opt" for="meal_veg">
-              <input type="radio" id="meal_veg" name="meal_pref" value="veg"/>
-              <span>Vegetarian</span>
-            </label>
-            <label class="meal-opt" for="meal_nonveg">
-              <input type="radio" id="meal_nonveg" name="meal_pref" value="non-veg"/>
-              <span>Non-Vegetarian</span>
-            </label>
-            <label class="meal-opt" for="meal_vegan">
-              <input type="radio" id="meal_vegan" name="meal_pref" value="vegan"/>
-              <span>Vegan</span>
             </label>
           </div>
         </div>
@@ -813,7 +737,7 @@
       </form>
     </section>
 
-    <!-- ── SUCCESS SCREEN ──────────────────────── -->
+    <!-- SUCCESS SCREEN -->
     <section class="success-card glass-card hidden" id="successSection">
       <div class="success-icon" id="successIcon">🎊</div>
       <h2 class="success-title" id="successTitle">Thank You!</h2>
@@ -824,7 +748,6 @@
       <p class="success-sub">Ali Alim Mohammed Naseem &amp; Fathimath Neesha</p>
       <p class="success-date">26 June 2026</p>
 
-      <!-- Dress Code (shown only for attending guests) -->
       <div class="dresscode-section hidden" id="dresscodeSection">
         <div class="divider-ornament" style="margin: 2rem 0 1.5rem;">
           <span class="line"></span><span class="diamond">❖</span><span class="line"></span>
@@ -832,7 +755,6 @@
         <p class="dresscode-heading">Dress Code</p>
         <p class="dresscode-note">Please dress in the colours of the wedding</p>
 
-        <!-- Ladies -->
         <div class="dresscode-group">
           <h3 class="dresscode-label ladies-label">Ladies</h3>
           <div class="color-swatches">
@@ -855,7 +777,6 @@
           </div>
         </div>
 
-        <!-- Gents -->
         <div class="dresscode-group">
           <h3 class="dresscode-label gents-label">Gents</h3>
           <div class="color-swatches gents-swatches">
@@ -875,7 +796,6 @@
   </main>
 
   <script>
-    /* ── PETALS ─────────────────────────────────── */
     (function() {
       const container = document.getElementById('petals');
       const symbols = ['🌸','✿','❀','꽃','✾','⚘'];
@@ -894,7 +814,6 @@
       }
     })();
 
-    /* ── COUNTDOWN ──────────────────────────────── */
     (function() {
       const target = new Date('2026-06-26T00:00:00');
       function update() {
@@ -919,7 +838,6 @@
       setInterval(update, 1000);
     })();
 
-    /* ── SECTION TOGGLES ────────────────────────── */
     function showForm() {
       document.getElementById('invitationSection').classList.add('hidden');
       document.getElementById('rsvpSection').classList.remove('hidden');
@@ -932,42 +850,25 @@
       document.getElementById('successSection').classList.add('hidden');
     }
 
-    /* ── ATTENDANCE RADIO STYLING ───────────────── */
     document.querySelectorAll('[name="attending"]').forEach(radio => {
       radio.addEventListener('change', function() {
-        // clear selected state
         document.querySelectorAll('.attend-option').forEach(el => el.classList.remove('selected'));
-        // mark selected
         this.closest('.attend-option').classList.add('selected');
-        // show/hide conditional fields
         const val = this.value;
         const plusOneGroup = document.getElementById('plusOneGroup');
-        const mealGroup    = document.getElementById('mealGroup');
         if (val === 'yes' || val === 'maybe') {
           plusOneGroup.classList.remove('hidden');
-          mealGroup.classList.remove('hidden');
         } else {
           plusOneGroup.classList.add('hidden');
-          mealGroup.classList.add('hidden');
         }
         document.getElementById('attending-error').textContent = '';
       });
     });
 
-    /* ── MEAL RADIO STYLING ─────────────────────── */
-    document.querySelectorAll('[name="meal_pref"]').forEach(radio => {
-      radio.addEventListener('change', function() {
-        document.querySelectorAll('.meal-opt').forEach(el => el.classList.remove('selected'));
-        this.closest('.meal-opt').classList.add('selected');
-      });
-    });
-
-    /* ── FORM SUBMIT ────────────────────────────── */
     document.getElementById('rsvpForm').addEventListener('submit', function(e) {
       e.preventDefault();
       let valid = true;
 
-      // Validate name
       const name = document.getElementById('name').value.trim();
       if (!name) {
         document.getElementById('name-error').textContent = 'Please enter your name.';
@@ -976,7 +877,6 @@
         document.getElementById('name-error').textContent = '';
       }
 
-      // Validate attendance
       const attending = document.querySelector('[name="attending"]:checked');
       if (!attending) {
         document.getElementById('attending-error').textContent = 'Please select an option.';
@@ -987,7 +887,6 @@
 
       if (!valid) return;
 
-      // Show loading
       const btn     = document.getElementById('submitBtn');
       const txtEl   = document.getElementById('submitText');
       const iconEl  = document.getElementById('submitIcon');
@@ -997,11 +896,8 @@
       iconEl.classList.add('hidden');
       spinner.classList.remove('hidden');
 
-      // Simulate submission (replace with your actual endpoint)
       setTimeout(() => {
         const attendingVal = attending.value;
-
-        // Success screen
         document.getElementById('rsvpSection').classList.add('hidden');
         document.getElementById('successSection').classList.remove('hidden');
 
