@@ -371,8 +371,8 @@
         name, phone:document.getElementById('fphone').value.trim()||null,
         attending:attend.value,
         guest_type:gtype.value,
-        family_count: isFam ? parseInt(document.getElementById('fcount').value) : 1,
         plus_one: isFam ? false : document.getElementById('fplus').checked,
+        family_count: isFam ? parseInt(document.getElementById('fcount').value) : (document.getElementById('fplus').checked ? 2 : 1),
         message:document.getElementById('fmsg').value.trim()||null
       };
 
