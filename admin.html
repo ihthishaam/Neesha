@@ -486,10 +486,11 @@
   }
 
   function updateStats(){
-    document.getElementById('sTotal').textContent=allData.length;
-    document.getElementById('sYes').textContent=allData.filter(r=>r.attending==='yes').length;
-    document.getElementById('sNo').textContent=allData.filter(r=>r.attending==='no').length;
-    document.getElementById('sMaybe').textContent=allData.filter(r=>r.attending==='maybe').length;
+    const guestCount = r => r.guest_type==='family' ? (r.family_count||1) : (r.plus_one ? 2 : 1);
+    document.getElementById('sTotal').textContent=allData.reduce((s,r)=>s+guestCount(r),0);
+    document.getElementById('sYes').textContent=allData.filter(r=>r.attending==='yes').reduce((s,r)=>s+guestCount(r),0);
+    document.getElementById('sNo').textContent=allData.filter(r=>r.attending==='no').reduce((s,r)=>s+guestCount(r),0);
+    document.getElementById('sMaybe').textContent=allData.filter(r=>r.attending==='maybe').reduce((s,r)=>s+guestCount(r),0);
     document.getElementById('sPlus').textContent=allData.filter(r=>r.plus_one&&r.guest_type!=='family').length;
     document.getElementById('sChk').textContent=allData.filter(r=>r.checked_in).length;
   }
