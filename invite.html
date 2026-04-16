@@ -289,19 +289,11 @@
         <p class="dc-n">Please dress in the colours of the wedding</p>
         <div class="dc-g">
           <h3 class="dc-l ladies">Ladies</h3>
-          <div class="swatches">
-            <div class="sw-item"><div class="sw-dot" style="background:#8B2D7A;"></div><span class="sw-name">Plum</span></div>
-            <div class="sw-item"><div class="sw-dot" style="background:#5C1B6D;"></div><span class="sw-name">Aubergine</span></div>
-            <div class="sw-item"><div class="sw-dot" style="background:#7B3DAD;"></div><span class="sw-name">Violet</span></div>
-            <div class="sw-item"><div class="sw-dot" style="background:#3B1054;"></div><span class="sw-name">Midnight</span></div>
-          </div>
+          <div class="swatches" id="dc-ladies"></div>
         </div>
         <div class="dc-g">
           <h3 class="dc-l gents">Gents</h3>
-          <div class="swatches">
-            <div class="sw-item"><div class="sw-dot" style="background:#1a1a1a;"></div><span class="sw-name">Black</span></div>
-            <div class="sw-item"><div class="sw-dot" style="background:#f5f0e8;border:2px solid rgba(201,168,76,.3);"></div><span class="sw-name">White</span></div>
-          </div>
+          <div class="swatches" id="dc-gents"></div>
         </div>
       </div>
     </section>
@@ -310,6 +302,31 @@
   <script>
     const SURL='https://aroorxunzrpfctnyfsks.supabase.co', SKEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFyb29yeHVuenJwZmN0bnlmc2tzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYyNzM2NjAsImV4cCI6MjA5MTg0OTY2MH0.9XA3qpeLpMZCGNQUDiLe411ev1NM9r8Hq15W0abWFE8';
     let familyCount = 2;
+
+    // Load dress code palettes from Supabase
+    const defaultPalettes = {
+      ladies:[{hex:'#8B2D7A',name:'Plum'},{hex:'#5C1B6D',name:'Aubergine'},{hex:'#7B3DAD',name:'Violet'},{hex:'#3B1054',name:'Midnight'}],
+      gents:[{hex:'#1a1a1a',name:'Black'},{hex:'#f5f0e8',name:'White'}]
+    };
+    async function loadPalettes(){
+      try{
+        const res=await fetch(SURL+'/rest/v1/settings?key=in.(ladies_palette,gents_palette)&select=key,value',{headers:{'apikey':SKEY,'Authorization':'Bearer '+SKEY}});
+        const rows=await res.json();
+        const ladies=(rows.find(r=>r.key==='ladies_palette')?.value)||defaultPalettes.ladies;
+        const gents=(rows.find(r=>r.key==='gents_palette')?.value)||defaultPalettes.gents;
+        renderPalette('dc-ladies',ladies);
+        renderPalette('dc-gents',gents);
+      }catch{
+        renderPalette('dc-ladies',defaultPalettes.ladies);
+        renderPalette('dc-gents',defaultPalettes.gents);
+      }
+    }
+    function renderPalette(id,colours){
+      const el=document.getElementById(id);
+      if(!el)return;
+      el.innerHTML=colours.map(c=>`<div class="sw-item"><div class="sw-dot" style="background:${c.hex};${c.hex==='#f5f0e8'?'border:2px solid rgba(201,168,76,.3);':''}"></div><span class="sw-name">${c.name}</span></div>`).join('');
+    }
+    loadPalettes();
 
     // Petals
     (function(){const c=document.getElementById('petals'),s=['🌸','✿','❀','✾'];for(let i=0;i<18;i++){const p=document.createElement('span');p.className='petal';p.textContent=s[Math.floor(Math.random()*s.length)];p.style.cssText=`left:${Math.random()*100}%;animation-duration:${8+Math.random()*14}s;animation-delay:${Math.random()*10}s;font-size:${10+Math.random()*10}px;`;c.appendChild(p);}})();
