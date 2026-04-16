@@ -383,7 +383,7 @@
       document.getElementById('loginScreen').style.display='none';
       document.getElementById('appScreen').style.display='block';
       if(document.body.classList.contains('dark'))document.getElementById('themeBtn').textContent='☀️';
-      loadData(); loadQR(); renderSwatches();
+      loadData(); loadQR(); loadPalettes();
     }else{
       document.getElementById('loginErr').textContent='Incorrect password.';
       document.getElementById('pwInput').value='';
@@ -418,26 +418,35 @@
     ladies:[{hex:'#8B2D7A',name:'Plum'},{hex:'#5C1B6D',name:'Aubergine'},{hex:'#7B3DAD',name:'Violet'},{hex:'#3B1054',name:'Midnight'}],
     gents:[{hex:'#1a1a1a',name:'Black'},{hex:'#f5f0e8',name:'White'}]
   };
-  function getPalettes(){
-    try{return JSON.parse(localStorage.getItem('wedding_palettes'))||defaultPalettes;}
-    catch{return defaultPalettes;}
+  let palettes = JSON.parse(JSON.stringify(defaultPalettes));
+
+  async function loadPalettes(){
+    try{
+      const res=await fetch(SURL+'/rest/v1/settings?key=in.(ladies_palette,gents_palette)&select=key,value',{headers:{'apikey':SKEY,'Authorization':'Bearer '+SKEY}});
+      const rows=await res.json();
+      const l=rows.find(r=>r.key==='ladies_palette')?.value;
+      const g=rows.find(r=>r.key==='gents_palette')?.value;
+      if(l)palettes.ladies=l;
+      if(g)palettes.gents=g;
+    }catch(e){console.warn('Could not load palettes',e);}
+    renderSwatches();
   }
-  function savePalettes(p){localStorage.setItem('wedding_palettes',JSON.stringify(p));}
+  async function savePalettesToSupabase(){
+    const headers={'apikey':SKEY,'Authorization':'Bearer '+SKEY,'Content-Type':'application/json','Prefer':'resolution=merge-duplicates'};
+    await fetch(SURL+'/rest/v1/settings',{method:'POST',headers,body:JSON.stringify({key:'ladies_palette',value:palettes.ladies,updated_at:new Date().toISOString()})});
+    await fetch(SURL+'/rest/v1/settings',{method:'POST',headers,body:JSON.stringify({key:'gents_palette',value:palettes.gents,updated_at:new Date().toISOString()})});
+  }
   function renderSwatches(){
     ['ladies','gents'].forEach(sec=>{
-      const p=getPalettes();
       const row=document.getElementById(sec+'-swatches');
       row.innerHTML='';
-      p[sec].forEach((c,i)=>{
+      palettes[sec].forEach((c,i)=>{
         const chip=document.createElement('div');
-        chip.className='swatch-chip';
-        chip.style.background=c.hex;
-        chip.title=c.name;
+        chip.className='swatch-chip';chip.style.background=c.hex;chip.title=c.name;
         const del=document.createElement('span');
         del.className='del-dot';del.textContent='✕';
         del.onclick=(e)=>{e.stopPropagation();removeColour(sec,i);};
-        chip.appendChild(del);
-        row.appendChild(chip);
+        chip.appendChild(del);row.appendChild(chip);
       });
       const addBtn=document.createElement('button');
       addBtn.className='add-colour-btn';addBtn.textContent='+';addBtn.title='Add colour';
@@ -454,17 +463,17 @@
     setTimeout(()=>document.getElementById('pickerName').focus(),100);
   }
   function closeModal(){document.getElementById('colourModal').classList.remove('open');}
-  function saveColour(){
+  async function saveColour(){
     const hex=document.getElementById('pickerColor').value;
     const name=document.getElementById('pickerName').value.trim()||'Colour';
-    const p=getPalettes();
-    p[colourSection].push({hex,name});
-    savePalettes(p);renderSwatches();closeModal();
+    palettes[colourSection].push({hex,name});
+    await savePalettesToSupabase();
+    renderSwatches();closeModal();
   }
-  function removeColour(sec,idx){
-    const p=getPalettes();
-    p[sec].splice(idx,1);
-    savePalettes(p);renderSwatches();
+  async function removeColour(sec,idx){
+    palettes[sec].splice(idx,1);
+    await savePalettesToSupabase();
+    renderSwatches();
   }
   document.getElementById('colourModal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeModal();});
 
