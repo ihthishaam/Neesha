@@ -490,7 +490,7 @@
     document.getElementById('sYes').textContent=allData.filter(r=>r.attending==='yes').length;
     document.getElementById('sNo').textContent=allData.filter(r=>r.attending==='no').length;
     document.getElementById('sMaybe').textContent=allData.filter(r=>r.attending==='maybe').length;
-    document.getElementById('sPlus').textContent=allData.filter(r=>r.plus_one).length;
+    document.getElementById('sPlus').textContent=allData.filter(r=>r.plus_one&&r.guest_type!=='family').length;
     document.getElementById('sChk').textContent=allData.filter(r=>r.checked_in).length;
   }
 
@@ -530,7 +530,7 @@
       const ts=dt?dt.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}):'';
       const isFam=r.guest_type==='family';
       const gtag=isFam?'<span class="gtype-tag gt-fam">👨‍👩‍👧 Family</span>':'<span class="gtype-tag gt-ind">🧑 Individual</span>';
-      const gcount=isFam?`<b>${r.family_count||'—'}</b>`:'1';
+      const gcount=isFam?`<b>${r.family_count||'—'}</b>`:`<b>${r.plus_one?2:1}</b>`;
       const msg=r.message?`<span class="msg-p" title="${esc(r.message)}">${esc(r.message)}</span>`:'<span style="color:var(--muted)">—</span>';
       const ciL=r.checked_in?'✓ In':'Check In';
       const ciC=r.checked_in?'btn-ci done':'btn-ci';
