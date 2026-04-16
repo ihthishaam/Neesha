@@ -204,7 +204,7 @@
     .modal{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:1.5rem;max-width:320px;width:100%;box-shadow:var(--shadow-lg);}
     .modal-title{font-size:.85rem;font-weight:700;margin-bottom:1rem;}
     .modal label{display:block;font-size:.72rem;font-weight:600;color:var(--muted);margin-bottom:.4rem;text-transform:uppercase;letter-spacing:.06em;}
-    .modal input[type=color]{width:100%;height:42px;border:1px solid var(--border);border-radius:8px;padding:2px;background:var(--surface2);cursor:pointer;margin-bottom:.9rem;}
+    .modal input[type=color]{width:52px;height:42px;border:1px solid var(--border);border-radius:8px;padding:2px;background:var(--surface2);cursor:pointer;}
     .modal input[type=text]{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:.5rem .75rem;color:var(--text);font-family:'Inter',sans-serif;font-size:.82rem;outline:none;margin-bottom:.9rem;}
     .modal input[type=text]:focus{border-color:var(--gold);}
     .modal-actions{display:flex;gap:.5rem;justify-content:flex-end;}
@@ -351,10 +351,25 @@
 <div class="modal-bg" id="colourModal">
   <div class="modal">
     <div class="modal-title" id="modalTitle">Add Colour</div>
-    <label>Colour</label>
-    <input type="color" id="pickerColor" value="#8B2D7A"/>
-    <label>Name</label>
-    <input type="text" id="pickerName" placeholder="e.g. Plum"/>
+
+    <!-- Live preview -->
+    <div style="display:flex;align-items:center;gap:.85rem;margin-bottom:1.1rem;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:.75rem 1rem;">
+      <div id="previewDot" style="width:40px;height:40px;border-radius:50%;background:#9B59B6;flex-shrink:0;border:2px solid rgba(255,255,255,.15);transition:background .15s;"></div>
+      <div>
+        <div id="previewName" style="font-size:.85rem;font-weight:600;color:var(--text);">Colour Name</div>
+        <div id="previewHex" style="font-size:.72rem;color:var(--muted);font-family:monospace;">#9B59B6</div>
+      </div>
+    </div>
+
+    <label>Colour Name <span style="color:var(--red);margin-left:2px;">*</span></label>
+    <input type="text" id="pickerName" placeholder="e.g. Plum, Ivory, Blush…" oninput="updatePreview()"/>
+
+    <label>Pick Colour</label>
+    <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.9rem;">
+      <input type="color" id="pickerColor" value="#9B59B6" oninput="updatePreview()" style="width:52px;height:42px;flex-shrink:0;padding:2px;border:1px solid var(--border);border-radius:8px;background:var(--surface2);cursor:pointer;"/>
+      <input type="text" id="pickerHex" placeholder="#9B59B6" maxlength="7" oninput="syncHex()" style="flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:.5rem .75rem;color:var(--text);font-family:monospace;font-size:.82rem;outline:none;"/>
+    </div>
+
     <div class="modal-actions">
       <button class="btn" onclick="closeModal()">Cancel</button>
       <button class="btn btn-gold" onclick="saveColour()">Add Colour</button>
@@ -458,9 +473,27 @@
     colourSection=sec;
     document.getElementById('modalTitle').textContent='Add Colour — '+(sec==='ladies'?'Ladies':'Gents');
     document.getElementById('pickerColor').value='#9B59B6';
+    document.getElementById('pickerHex').value='#9B59B6';
     document.getElementById('pickerName').value='';
+    updatePreview();
     document.getElementById('colourModal').classList.add('open');
     setTimeout(()=>document.getElementById('pickerName').focus(),100);
+  }
+  function updatePreview(){
+    const hex=document.getElementById('pickerColor').value;
+    const name=document.getElementById('pickerName').value.trim()||'Colour Name';
+    document.getElementById('previewDot').style.background=hex;
+    document.getElementById('previewName').textContent=name;
+    document.getElementById('previewHex').textContent=hex;
+    document.getElementById('pickerHex').value=hex;
+  }
+  function syncHex(){
+    const val=document.getElementById('pickerHex').value.trim();
+    if(/^#[0-9a-fA-F]{6}$/.test(val)){
+      document.getElementById('pickerColor').value=val;
+      document.getElementById('previewDot').style.background=val;
+      document.getElementById('previewHex').textContent=val;
+    }
   }
   function closeModal(){document.getElementById('colourModal').classList.remove('open');}
   async function saveColour(){
