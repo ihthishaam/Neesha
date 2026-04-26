@@ -325,6 +325,7 @@
               <th onclick="sortBy('phone')" class="hide-sm">Phone</th>
               <th onclick="sortBy('guest_type')" class="hide-sm">Type</th>
               <th onclick="sortBy('family_count')" class="hide-sm">Guests</th>
+              <th onclick="sortBy('children_under5')" class="hide-sm">Under 5</th>
               <th onclick="sortBy('attending')">Status</th>
               <th onclick="sortBy('plus_one')" class="hide-sm">+1</th>
               <th onclick="sortBy('checked_in')">Check-In</th>
@@ -547,7 +548,7 @@
   function sortBy(k){
     if(sortKey===k)sortDir=sortDir==='asc'?'desc':'asc';else{sortKey=k;sortDir='asc';}
     document.querySelectorAll('thead th').forEach(th=>th.classList.remove('asc','desc'));
-    const cols=['id','name','phone','guest_type','family_count','attending','plus_one','checked_in','created_at','message',''];
+    const cols=['id','name','phone','guest_type','family_count','children_under5','attending','plus_one','checked_in','created_at','message',''];
     const i=cols.indexOf(k);const ths=document.querySelectorAll('thead th');
     if(ths[i])ths[i].classList.add(sortDir);
     render();
@@ -574,6 +575,7 @@
       const isFam=r.guest_type==='family';
       const gtag=isFam?'<span class="gtype-tag gt-fam">👨‍👩‍👧 Family</span>':'<span class="gtype-tag gt-ind">🧑 Individual</span>';
       const gcount=isFam?`<b>${r.family_count||'—'}</b>`:`<b>${r.plus_one?2:1}</b>`;
+      const u5=isFam?(r.children_under5>0?`<b style="color:var(--purple)">${r.children_under5}</b>`:'<span style="color:var(--muted)">—</span>'):'<span style="color:var(--muted)">—</span>';
       const msg=r.message?`<span class="msg-p" title="${esc(r.message)}">${esc(r.message)}</span>`:'<span style="color:var(--muted)">—</span>';
       const ciL=r.checked_in?'✓ In':'Check In';
       const ciC=r.checked_in?'btn-ci done':'btn-ci';
@@ -583,6 +585,7 @@
         <td class="hide-sm"><div class="gphone">${esc(r.phone||'—')}</div></td>
         <td class="hide-sm">${gtag}</td>
         <td class="hide-sm" style="font-size:.8rem;font-weight:600;">${gcount}</td>
+        <td class="hide-sm" style="font-size:.8rem;">${u5}</td>
         <td>${sb[r.attending]||'—'}</td>
         <td class="hide-sm">${r.plus_one?'<span class="plus-y">✓ Yes</span>':'<span class="plus-n">—</span>'}</td>
         <td><button class="${ciC}" onclick="toggleCI(${r.id},${!r.checked_in})">${ciL}</button></td>
@@ -621,13 +624,14 @@
 
   function exportCSV(){
     if(!allData.length){alert('No RSVPs to export.');return;}
-    const h=['#','Name','Phone','Type','Guests','Attendance','Plus One','Checked In','Message','Submitted'];
+    const h=['#','Name','Phone','Type','Guests','Under 5','Attendance','Plus One','Checked In','Message','Submitted'];
     const rows=allData.map((r,i)=>[
       i+1,
       `"${(r.name||'').replace(/"/g,'""')}"`,
       `"${(r.phone||'').replace(/"/g,'""')}"`,
       r.guest_type==='family'?'Family':'Individual',
-      r.family_count||1,
+      r.guest_type==='family'?(r.family_count||1):(r.plus_one?2:1),
+      r.children_under5||0,
       r.attending==='yes'?'Attending':r.attending==='no'?'Declining':'Maybe',
       r.plus_one?'Yes':'No',
       r.checked_in?'Yes':'No',
