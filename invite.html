@@ -228,14 +228,30 @@
 
         <!-- FAMILY COUNT (family only) -->
         <div class="fg hidden" id="fg-count">
-          <p class="fg-label">How many people in your family?</p>
-          <div class="fc-wrap">
-            <button type="button" class="fc-btn" onclick="changeCount(-1)">−</button>
-            <span class="fc-num" id="fc-display">2</span>
-            <button type="button" class="fc-btn" onclick="changeCount(1)">+</button>
-            <span class="fc-label">people including yourself</span>
+          <p class="fg-label">Family members attending</p>
+          <div style="display:flex;flex-direction:column;gap:.85rem;">
+            <!-- Total -->
+            <div style="background:rgba(255,255,255,.04);border:1px solid rgba(201,168,76,.15);border-radius:12px;padding:.9rem 1rem;">
+              <div style="font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:.6rem;">Total people including yourself</div>
+              <div class="fc-wrap">
+                <button type="button" class="fc-btn" onclick="changeCount(-1)">−</button>
+                <span class="fc-num" id="fc-display">2</span>
+                <button type="button" class="fc-btn" onclick="changeCount(1)">+</button>
+              </div>
+            </div>
+            <!-- Under 5 -->
+            <div style="background:rgba(255,255,255,.04);border:1px solid rgba(201,168,76,.15);border-radius:12px;padding:.9rem 1rem;">
+              <div style="font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:.6rem;">Children under 5 years <span style="font-size:.68rem;text-transform:none;letter-spacing:0;">(included in total)</span></div>
+              <div class="fc-wrap">
+                <button type="button" class="fc-btn" onclick="changeUnder5(-1)">−</button>
+                <span class="fc-num" id="fu5-display">0</span>
+                <button type="button" class="fc-btn" onclick="changeUnder5(1)">+</button>
+              </div>
+            </div>
           </div>
+          <span class="ferr" id="err-family"></span>
           <input type="hidden" id="fcount" value="2"/>
+          <input type="hidden" id="funder5" value="0"/>
         </div>
 
         <!-- PLUS ONE (individual only) -->
@@ -302,6 +318,21 @@
   <script>
     const SURL='https://aroorxunzrpfctnyfsks.supabase.co', SKEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFyb29yeHVuenJwZmN0bnlmc2tzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYyNzM2NjAsImV4cCI6MjA5MTg0OTY2MH0.9XA3qpeLpMZCGNQUDiLe411ev1NM9r8Hq15W0abWFE8';
     let familyCount = 2;
+    let under5Count = 0;
+
+    function changeCount(d){
+      familyCount = Math.max(2, Math.min(20, familyCount+d));
+      under5Count = Math.min(under5Count, familyCount);
+      document.getElementById('fc-display').textContent = familyCount;
+      document.getElementById('fcount').value = familyCount;
+      document.getElementById('fu5-display').textContent = under5Count;
+      document.getElementById('funder5').value = under5Count;
+    }
+    function changeUnder5(d){
+      under5Count = Math.max(0, Math.min(familyCount, under5Count+d));
+      document.getElementById('fu5-display').textContent = under5Count;
+      document.getElementById('funder5').value = under5Count;
+    }
 
     // Load dress code palettes from Supabase
     const defaultPalettes = {
@@ -345,16 +376,11 @@
         const isFam = this.value==='family';
         document.getElementById('fg-count').classList.toggle('hidden',!isFam);
         document.getElementById('fg-plus').classList.toggle('hidden',isFam);
+        // Reset counters on switch
+        if(!isFam){ familyCount=2; under5Count=0; document.getElementById('fc-display').textContent=2; document.getElementById('fcount').value=2; document.getElementById('fu5-display').textContent=0; document.getElementById('funder5').value=0; }
         document.getElementById('err-type').textContent='';
       });
     });
-
-    // Family count
-    function changeCount(d){
-      familyCount = Math.max(2, Math.min(20, familyCount+d));
-      document.getElementById('fc-display').textContent = familyCount;
-      document.getElementById('fcount').value = familyCount;
-    }
 
     // Attendance
     document.querySelectorAll('[name="attend"]').forEach(r=>{
@@ -390,6 +416,7 @@
         guest_type:gtype.value,
         plus_one: isFam ? false : document.getElementById('fplus').checked,
         family_count: isFam ? parseInt(document.getElementById('fcount').value) : (document.getElementById('fplus').checked ? 2 : 1),
+        children_under5: isFam ? parseInt(document.getElementById('funder5').value) : 0,
         message:document.getElementById('fmsg').value.trim()||null
       };
 
