@@ -164,8 +164,8 @@
       </div>
       <div class="div"><span class="l"></span><span class="d">❖</span><span class="l"></span></div>
       <div class="details">
-        <div class="detail"><span class="di">📅</span><div><span class="dl">Date</span><span class="dv">Friday, 13th June 2026</span></div></div>
-        <div class="detail"><span class="di">🕊️</span><div><span class="dl">Kindly RSVP by</span><span class="dv">20th May 2026</span></div></div>
+        <div class="detail"><span class="di">📅</span><div><span class="dl">Date</span><span class="dv" id="displayWeddingDate">Friday, 13th June 2026</span></div></div>
+        <div class="detail"><span class="di">🕊️</span><div><span class="dl">Kindly RSVP by</span><span class="dv" id="displayRsvpDeadline">20th May 2026</span></div></div>
       </div>
       <p class="msg">We joyfully invite you to witness and celebrate<br>the union of our hearts. Your presence would<br>make our day truly complete.</p>
       <button class="btn" onclick="showForm()">
@@ -298,7 +298,7 @@
       <p class="succ-msg" id="succMsg">Your RSVP has been received. We are so excited to celebrate with you!</p>
       <div class="div" style="margin:1.5rem 0;"><span class="l"></span><span class="d">❖</span><span class="l"></span></div>
       <p class="succ-names">Ali Alim Mohammed Naseem &amp; Fathimath Neesha</p>
-      <p class="succ-date">13 June 2026</p>
+      <p class="succ-date" id="succDate">13 June 2026</p>
       <div class="hidden" id="dresscode">
         <div class="div" style="margin:2rem 0 1.5rem;"><span class="l"></span><span class="d">❖</span><span class="l"></span></div>
         <p class="dc-h">Dress Code</p>
@@ -362,8 +362,47 @@
     // Petals
     (function(){const c=document.getElementById('petals'),s=['🌸','✿','❀','✾'];for(let i=0;i<18;i++){const p=document.createElement('span');p.className='petal';p.textContent=s[Math.floor(Math.random()*s.length)];p.style.cssText=`left:${Math.random()*100}%;animation-duration:${8+Math.random()*14}s;animation-delay:${Math.random()*10}s;font-size:${10+Math.random()*10}px;`;c.appendChild(p);}})();
 
-    // Countdown
-    (function(){const t=new Date('2026-06-13T00:00:00');function u(){const d=t-Date.now();if(d<=0){['cdd','cdh','cdm','cds'].forEach(x=>document.getElementById(x).textContent='00');return;}document.getElementById('cdd').textContent=String(Math.floor(d/86400000)).padStart(2,'0');document.getElementById('cdh').textContent=String(Math.floor((d%86400000)/3600000)).padStart(2,'0');document.getElementById('cdm').textContent=String(Math.floor((d%3600000)/60000)).padStart(2,'0');document.getElementById('cds').textContent=String(Math.floor((d%60000)/1000)).padStart(2,'0');}u();setInterval(u,1000);})();
+    // Countdown — target updated dynamically from Supabase
+    let countdownTarget = new Date('2026-06-13T00:00:00');
+    let countdownInterval = null;
+    function startCountdown(){
+      if(countdownInterval) clearInterval(countdownInterval);
+      function u(){const d=countdownTarget-Date.now();if(d<=0){['cdd','cdh','cdm','cds'].forEach(x=>document.getElementById(x).textContent='00');return;}document.getElementById('cdd').textContent=String(Math.floor(d/86400000)).padStart(2,'0');document.getElementById('cdh').textContent=String(Math.floor((d%86400000)/3600000)).padStart(2,'0');document.getElementById('cdm').textContent=String(Math.floor((d%3600000)/60000)).padStart(2,'0');document.getElementById('cds').textContent=String(Math.floor((d%60000)/1000)).padStart(2,'0');}
+      u(); countdownInterval=setInterval(u,1000);
+    }
+    startCountdown();
+
+    // Load dates + subtitle from Supabase
+    async function loadSettings(){
+      try{
+        const res=await fetch(SURL+'/rest/v1/settings?key=in.(wedding_date,rsvp_deadline)&select=key,value',{headers:{'apikey':SKEY,'Authorization':'Bearer '+SKEY}});
+        const rows=await res.json();
+        const wd=rows.find(r=>r.key==='wedding_date')?.value?.replace(/"/g,'');
+        const rd=rows.find(r=>r.key==='rsvp_deadline')?.value?.replace(/"/g,'');
+        if(wd){
+          countdownTarget=new Date(wd+'T00:00:00');
+          startCountdown();
+          const wdDate=new Date(wd+'T00:00:00');
+          const wdStr=wdDate.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+          // Make day ordinal
+          const day=wdDate.getDate();
+          const ord=day+(day===1||day===21||day===31?'st':day===2||day===22?'nd':day===3||day===23?'rd':'th');
+          const wdFmt=wdDate.toLocaleDateString('en-GB',{weekday:'long',month:'long',year:'numeric'}).replace(/\d{4}/,'').trim();
+          document.getElementById('displayWeddingDate').textContent=wdDate.toLocaleDateString('en-GB',{weekday:'long'})+', '+ord+' '+wdDate.toLocaleDateString('en-GB',{month:'long'})+' '+wdDate.getFullYear();
+          // Update subtitle and success date
+          const shortDate=ord+' '+wdDate.toLocaleDateString('en-GB',{month:'long'})+' '+wdDate.getFullYear();
+          document.querySelectorAll('.fsub').forEach(el=>el.textContent=`Alim & Neesha's Wedding · ${shortDate}`);
+          const sd=document.getElementById('succDate');if(sd)sd.textContent=shortDate;
+        }
+        if(rd){
+          const rdDate=new Date(rd+'T00:00:00');
+          const rday=rdDate.getDate();
+          const rord=rday+(rday===1||rday===21||rday===31?'st':rday===2||rday===22?'nd':rday===3||rday===23?'rd':'th');
+          document.getElementById('displayRsvpDeadline').textContent=rord+' '+rdDate.toLocaleDateString('en-GB',{month:'long'})+' '+rdDate.getFullYear();
+        }
+      }catch(e){console.warn('Could not load settings',e);}
+    }
+    loadSettings();
 
     function showForm(){document.getElementById('secInvite').classList.add('hidden');document.getElementById('secForm').classList.remove('hidden');window.scrollTo({top:0,behavior:'smooth'});}
     function showInvite(){document.getElementById('secInvite').classList.remove('hidden');document.getElementById('secForm').classList.add('hidden');}
