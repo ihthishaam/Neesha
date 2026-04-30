@@ -301,6 +301,25 @@
       </div>
     </div>
 
+    <!-- WEDDING SETTINGS -->
+    <div class="panel" style="margin-bottom:2rem;">
+      <div class="panel-title">Wedding Settings</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+        <div>
+          <label style="display:block;font-size:.68rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:.4rem;">Wedding Date</label>
+          <input type="date" id="settingWeddingDate" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:.5rem .75rem;color:var(--text);font-family:'Inter',sans-serif;font-size:.82rem;outline:none;"/>
+        </div>
+        <div>
+          <label style="display:block;font-size:.68rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:.4rem;">RSVP Deadline</label>
+          <input type="date" id="settingRsvpDeadline" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:.5rem .75rem;color:var(--text);font-family:'Inter',sans-serif;font-size:.82rem;outline:none;"/>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:.75rem;margin-top:.9rem;">
+        <button class="btn btn-gold" onclick="saveSettings()">Save Dates</button>
+        <span id="settingMsg" style="font-size:.75rem;color:var(--green);min-height:1rem;"></span>
+      </div>
+    </div>
+
     <!-- TABLE -->
     <div class="toolbar">
       <div class="tabs" id="tabsEl">
@@ -399,7 +418,7 @@
       document.getElementById('loginScreen').style.display='none';
       document.getElementById('appScreen').style.display='block';
       if(document.body.classList.contains('dark'))document.getElementById('themeBtn').textContent='☀️';
-      loadData(); loadQR(); loadPalettes();
+      loadData(); loadQR(); loadPalettes(); loadSettings();
     }else{
       document.getElementById('loginErr').textContent='Incorrect password.';
       document.getElementById('pwInput').value='';
@@ -517,6 +536,32 @@
     if(!r.ok)throw new Error(await r.text());
     if(opts.method==='DELETE'||opts.headers?.Prefer==='return=minimal')return null;
     const txt=await r.text();return txt?JSON.parse(txt):null;
+  }
+
+  // ── SETTINGS ──
+  async function loadSettings(){
+    try{
+      const res=await sf('/rest/v1/settings?key=in.(wedding_date,rsvp_deadline)&select=key,value');
+      const rows=res||[];
+      const wd=rows.find(r=>r.key==='wedding_date')?.value;
+      const rd=rows.find(r=>r.key==='rsvp_deadline')?.value;
+      if(wd) document.getElementById('settingWeddingDate').value=wd.replace(/"/g,'');
+      if(rd) document.getElementById('settingRsvpDeadline').value=rd.replace(/"/g,'');
+    }catch(e){console.warn('Could not load settings',e);}
+  }
+  async function saveSettings(){
+    const wd=document.getElementById('settingWeddingDate').value;
+    const rd=document.getElementById('settingRsvpDeadline').value;
+    const msg=document.getElementById('settingMsg');
+    if(!wd||!rd){msg.style.color='var(--red)';msg.textContent='Please fill in both dates.';return;}
+    try{
+      const headers={'apikey':SKEY,'Authorization':'Bearer '+SKEY,'Content-Type':'application/json','Prefer':'resolution=merge-duplicates'};
+      await fetch(SURL+'/rest/v1/settings',{method:'POST',headers,body:JSON.stringify({key:'wedding_date',value:JSON.stringify(wd),updated_at:new Date().toISOString()})});
+      await fetch(SURL+'/rest/v1/settings',{method:'POST',headers,body:JSON.stringify({key:'rsvp_deadline',value:JSON.stringify(rd),updated_at:new Date().toISOString()})});
+      msg.style.color='var(--green)';
+      msg.textContent='✓ Saved! Invite page will reflect the new dates.';
+      setTimeout(()=>msg.textContent='',3000);
+    }catch(e){msg.style.color='var(--red)';msg.textContent='Failed to save. Try again.';}
   }
 
   async function loadData(){
